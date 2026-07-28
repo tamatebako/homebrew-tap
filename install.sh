@@ -34,7 +34,8 @@ case "$os" in
 esac
 
 # ------------------------------------------------------------------------
-# 2. Version (pin with TEBAECO_VERSION or first arg; default: latest)
+# 2. Version (pin with TEBAKO_VERSION or first arg; default: latest).
+# Tags carry the v (v0.1.0); asset names do not (tebako-0.1.0-<platform>).
 # ------------------------------------------------------------------------
 version="${1:-${TEBAKO_VERSION:-}}"
 if [ -z "$version" ]; then
@@ -42,6 +43,7 @@ if [ -z "$version" ]; then
   version="$(curl -fsSL -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest" | sed 's|.*/||')"
 fi
 [ -n "$version" ] || die "could not resolve the latest release tag"
+vnum="${version#v}"
 echo "install.sh: tebako $version for $platform → $DEST"
 
 # ------------------------------------------------------------------------
@@ -51,8 +53,8 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 base="https://github.com/$REPO/releases/download/$version"
 for b in $BINARIES; do
-  curl -fsSL -o "$tmp/$b" "$base/$b-$version-$platform" \
-    || die "download failed: $b-$version-$platform (does the release ship the $platform leg?)"
+  curl -fsSL -o "$tmp/$b" "$base/$b-$vnum-$platform" \
+    || die "download failed: $b-$vnum-$platform (does the release ship the $platform leg?)"
 done
 curl -fsSL -o "$tmp/SHA256SUMS" "$base/SHA256SUMS" || die "download failed: SHA256SUMS"
 
@@ -67,8 +69,8 @@ else
   die "need sha256sum or shasum for verification"
 fi
 for b in $BINARIES; do
-  want="$(awk -v f="$b-$version-$platform" '$2 == f {print $1}' "$tmp/SHA256SUMS")"
-  [ -n "$want" ] || die "no SHA256SUMS entry for $b-$version-$platform"
+  want="$(awk -v f="$b-$vnum-$platform" '$2 == f {print $1}' "$tmp/SHA256SUMS")"
+  [ -n "$want" ] || die "no SHA256SUMS entry for $b-$vnum-$platform"
   got="$(S256 "$tmp/$b")"
   [ "$got" = "$want" ] || die "SHA256 MISMATCH for $b (want $want, got $got) — refusing to install"
 done
