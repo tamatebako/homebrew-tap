@@ -26,9 +26,10 @@ case "$os" in
   Darwin) platform="macos-$arch" ;;
   Linux)
     if ldd --version 2>&1 | grep -qi musl; then
-      die "musl detected — the musl legs are not released yet (use linux-gnu on a glibc host, or watch the v0.1.x line)"
+      platform="linux-musl-$arch"
+    else
+      platform="linux-gnu-$arch"
     fi
-    platform="linux-gnu-$arch"
     ;;
   *) die "unsupported OS: $os" ;;
 esac
