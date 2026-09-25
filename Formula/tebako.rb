@@ -2,12 +2,12 @@
 
 # The tebako CLI formula (spec 16 §3.1): installs the five tebako
 # binaries (tebako, tfs, tebako-pkg, tebako-shim, tebako-bootstrap) per
-# platform. sha256s are the release SHA256SUMS of v0.1.2 (verified at
+# platform. sha256s are the release SHA256SUMS of v2.8.17 (verified at
 # fill time).
 class Tebako < Formula
   desc "tebako — package, sign, and run tebako packages (bootstrap + runtime slices + payload slices)"
   homepage "https://github.com/tamatebako/tebako"
-  version "0.1.2"
+  version "2.8.17"
   license "BSD-2-Clause"
 
   base = "https://github.com/tamatebako/tebako/releases/download/v#{version}"
@@ -15,38 +15,38 @@ class Tebako < Formula
   on_macos do
     on_arm do
       url "#{base}/tebako-#{version}-macos-arm64"
-      sha256 "9d8328168b93c1828059ba90baf13b4855a7de483b25ae9df9c596c1e83634a3"
-      resource("tebako-pkg") { url "#{base}/tebako-pkg-#{version}-macos-arm64"; sha256 "ec5be153c2c5879b0a9a90c6e6f325ae7ac33632c81e4c97bd0ff1b91f92bb28" }
-      resource("tfs") { url "#{base}/tfs-#{version}-macos-arm64"; sha256 "4b791be221501e03f2f64af155ebe6ef903f3a4a2c25733d93bfa2afb3165688" }
-      resource("tebako-shim") { url "#{base}/tebako-shim-#{version}-macos-arm64"; sha256 "03bf1d5c93a50a66e31ee6443c6d88527c325828ec5910ca1a9980e8b8f6a134" }
-      resource("tebako-bootstrap") { url "#{base}/tebako-bootstrap-#{version}-macos-arm64"; sha256 "3445aed6c954b67fefef6611c4d3ebd4a7b2207b3fe8d5ca62667014590e08cc" }
+      sha256 "a94a9ec6b12fcff1d3c8889befebcc8f6d306bfc81a47696cd4268c97682cccd"
+      resource("tebako-pkg") { url "#{base}/tebako-pkg-#{version}-macos-arm64"; sha256 "06dd19d7ecb14f54b4ed68b15a981b06cf596ed5131d2a1f86d3cbcd5bbed9b6" }
+      resource("tfs") { url "#{base}/tfs-#{version}-macos-arm64"; sha256 "f2c957bd27a3b2fea871e04bdf5c8de3689a8327a1474ca698e3936eaf239661" }
+      resource("tebako-shim") { url "#{base}/tebako-shim-#{version}-macos-arm64"; sha256 "cb7b888bb31916b58b79dec99e6b7baf97d1280bea9bb31768ec8ddef3769071" }
+      resource("tebako-bootstrap") { url "#{base}/tebako-bootstrap-#{version}-macos-arm64"; sha256 "931088bf0b4046e73ae5da346ec5b2c88271a9ef0f35d57dd9ee9c668a929396" }
     end
     on_intel do
       url "#{base}/tebako-#{version}-macos-x86_64"
-      sha256 "ce1410bb775e8ff9492ab178e07714ed75bd0e7c5525d95139482a67104be14c"
-      resource("tebako-pkg") { url "#{base}/tebako-pkg-#{version}-macos-x86_64"; sha256 "9952398825736f5893d2587f57491088fa8b7690df0d49f9c32ac564158b6a1a" }
-      resource("tfs") { url "#{base}/tfs-#{version}-macos-x86_64"; sha256 "8baafef0536b529ab10a1bcd02de28c7d37dce3dcbb2197ae401700811a88bc7" }
-      resource("tebako-shim") { url "#{base}/tebako-shim-#{version}-macos-x86_64"; sha256 "f322f686ed4870572b58608a32fd9974f6294671fa8d23c13957e42c99ff2f97" }
-      resource("tebako-bootstrap") { url "#{base}/tebako-bootstrap-#{version}-macos-x86_64"; sha256 "ef02b696bf89abc2aa835e7a21e53e388f6e94b46a2a9ce08fbff9f4cc37fca3" }
+      sha256 "16beb4f8624af7a06f1c9b33ece68ecb8bb372974a47d679055361aa9134a2dd"
+      resource("tebako-pkg") { url "#{base}/tebako-pkg-#{version}-macos-x86_64"; sha256 "34e7a21cf2b1d4041a82fe6470796794bc3bb4e2edf9b9d5d1e56e9dd22da8f6" }
+      resource("tfs") { url "#{base}/tfs-#{version}-macos-x86_64"; sha256 "cda457657c1eec648091b23df0c2b3119b1af9cfc1dbd95297772ee546f7ec53" }
+      resource("tebako-shim") { url "#{base}/tebako-shim-#{version}-macos-x86_64"; sha256 "d57e3300cfe4ecfab376d9dd093b969be164dfedd07b0aa0e32ab48985da4261" }
+      resource("tebako-bootstrap") { url "#{base}/tebako-bootstrap-#{version}-macos-x86_64"; sha256 "6e68a627698c575410678ac0f03b8266dfba6cbdd7fb95c402c32cfdbc7c9319" }
     end
   end
 
   on_linux do
     on_arm do
       url "#{base}/tebako-#{version}-linux-gnu-arm64"
-      sha256 "67aa3ac7aaed346d69dfa12f70f6ad8e7ebbf17386548bfd6182b08bac7af547"
-      resource("tebako-pkg") { url "#{base}/tebako-pkg-#{version}-linux-gnu-arm64"; sha256 "9722d1e899b962eaa5f78a790c9b111b65d4b1f1f092c4b3fb7cabeb6777b31d" }
-      resource("tfs") { url "#{base}/tfs-#{version}-linux-gnu-arm64"; sha256 "338e8c82574a68ea568ee139fe7b3a4decccf45a02b5af1e5fe0a673b7a4d17e" }
-      resource("tebako-shim") { url "#{base}/tebako-shim-#{version}-linux-gnu-arm64"; sha256 "4505047201ae519bf063d4b8b770e007e50d760fa8fda90d82c99c6c564e3c44" }
-      resource("tebako-bootstrap") { url "#{base}/tebako-bootstrap-#{version}-linux-gnu-arm64"; sha256 "1ab11d209e2b77d6828558a1772252d7287e1d325f7cd0a1e5a1fca8f4beecc7" }
+      sha256 "49fcc1af528d949a07df650d32122b172a3f2584b4a78e812fe62fad2025ea2a"
+      resource("tebako-pkg") { url "#{base}/tebako-pkg-#{version}-linux-gnu-arm64"; sha256 "e12e5f6159173feba0442187614ef9c88b348032affbe22ba4ca71b65456c214" }
+      resource("tfs") { url "#{base}/tfs-#{version}-linux-gnu-arm64"; sha256 "7ced6afe31e540d63057b5eb3d62de2a1e2879a4ebec859c50d78c4356f95c86" }
+      resource("tebako-shim") { url "#{base}/tebako-shim-#{version}-linux-gnu-arm64"; sha256 "290ab547d53d31863c82b5ffc97e3e5792e40a87dd18177f2effa8338cf62a01" }
+      resource("tebako-bootstrap") { url "#{base}/tebako-bootstrap-#{version}-linux-gnu-arm64"; sha256 "51dfc5827d541f926d1edfa5f9cfd3ca03149f7eb1d01a2b3b1ba4e991e7600f" }
     end
     on_intel do
       url "#{base}/tebako-#{version}-linux-gnu-x86_64"
-      sha256 "8b45d11199a5b878abcae3746f8c0ecb6a53e871890bdbd5d9d1e537a8d1f59e"
-      resource("tebako-pkg") { url "#{base}/tebako-pkg-#{version}-linux-gnu-x86_64"; sha256 "10a6f194d9ffd992f8a20da6933a407b78540ca1769048d43881ef963959a5e8" }
-      resource("tfs") { url "#{base}/tfs-#{version}-linux-gnu-x86_64"; sha256 "07e47cf05fe19cbc726ad028e2ec8463502809c819c71d78449bc7a5650b95b4" }
-      resource("tebako-shim") { url "#{base}/tebako-shim-#{version}-linux-gnu-x86_64"; sha256 "8cdc6194495dab1b1e575f7313821b2837e4d793f9b710427329649827bef9e8" }
-      resource("tebako-bootstrap") { url "#{base}/tebako-bootstrap-#{version}-linux-gnu-x86_64"; sha256 "1dab82e238458ef33aeb5f467e7f80cbf202aaa710c738995279144b5f87cdb3" }
+      sha256 "355c81b97d86c4a76f215e46b9570cf4f30df44d5bb086c13459ff7e0de12929"
+      resource("tebako-pkg") { url "#{base}/tebako-pkg-#{version}-linux-gnu-x86_64"; sha256 "ae8a21f2f98df7ed9a8cf5ade87ff49005455de4b5f820cb39baf404ee6799e6" }
+      resource("tfs") { url "#{base}/tfs-#{version}-linux-gnu-x86_64"; sha256 "083e4886f751901493d124cf90f8dc20a88fb9ba0877db9af1a5b42d0c1d64db" }
+      resource("tebako-shim") { url "#{base}/tebako-shim-#{version}-linux-gnu-x86_64"; sha256 "9a3599f815f6246929ea69e5c39379b5ba5161997756b57b923e524c706fbc03" }
+      resource("tebako-bootstrap") { url "#{base}/tebako-bootstrap-#{version}-linux-gnu-x86_64"; sha256 "13c1db648f592c80115fb2a4508778fd3aca6617546a017a7008c3916f62f5cf" }
     end
   end
 
@@ -57,6 +57,13 @@ class Tebako < Formula
         bin.install Dir["#{name}-#{version}-*"].first => name
       end
     end
+  end
+
+  def post_install
+    # spec 37 §6: seed the official registry into the user's config
+    # (authored, user-removable; idempotent). Soft — a network hiccup
+    # never fails the install; `tebako setup` re-runs anytime.
+    system(bin/"tebako", "setup") or opoo "tebako setup did not complete — re-run `tebako setup` when online"
   end
 
   def caveats
