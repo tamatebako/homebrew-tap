@@ -47,10 +47,11 @@ replaced = 0
 BINARIES.product(PLATFORMS).each do |binary, platform|
   want = sums.fetch("#{binary}-#{VERSION}-#{platform}")
   # The asset name appears in the url; its sha256 sits on the same line
-  # (the resource one-liners) or on the immediately following line (the
-  # bare url + sha256 pair). Each (binary, platform) pair occurs exactly
-  # once in the formula.
-  pattern = /(#{Regexp.escape(binary)}-\#\{version\}-#{Regexp.escape(platform)}[^\n]*(?:\n\s*)?sha256 ")[0-9a-f]{64}"/
+  # (the resource one-liners, which interpolate the `ver` local) or on
+  # the immediately following line (the bare url + sha256 pair, which
+  # interpolates `version` at formula scope). Each (binary, platform)
+  # pair occurs exactly once in the formula.
+  pattern = /(#{Regexp.escape(binary)}-\#\{ver(?:sion)?\}-#{Regexp.escape(platform)}[^\n]*(?:\n\s*)?sha256 ")[0-9a-f]{64}"/
   if text.sub!(pattern) { "#{Regexp.last_match(1)}#{want}\"" }
     replaced += 1
   else
