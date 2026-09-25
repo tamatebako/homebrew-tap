@@ -59,6 +59,13 @@ class Tebako < Formula
     end
   end
 
+  def post_install
+    # spec 37 §6: seed the official registry into the user's config
+    # (authored, user-removable; idempotent). Soft — a network hiccup
+    # never fails the install; `tebako setup` re-runs anytime.
+    system(bin/"tebako", "setup") or opoo "tebako setup did not complete — re-run `tebako setup` when online"
+  end
+
   def caveats
     <<~EOS
       Put the payload shims on your PATH (one per installed payload command):
