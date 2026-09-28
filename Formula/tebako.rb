@@ -2,14 +2,14 @@
 
 # The tebako CLI formula (spec 16 §3.1): installs the five tebako
 # binaries (tebako, tfs, tebako-pkg, tebako-shim, tebako-bootstrap) per
-# platform. sha256s are the release SHA256SUMS of v2.8.18 (verified at
+# platform. sha256s are the release SHA256SUMS of v2.8.19 (verified at
 # fill time).
 class Tebako < Formula
   desc "Package, sign, and run stitched tebako packages and payload slices"
   homepage "https://github.com/tamatebako/tebako"
   # Declared explicitly: the download URL interpolates `version`, so the
   # audit's URL-scan cannot be the source of truth for this formula.
-  version "2.8.18"
+  version "2.8.19"
   license "BSD-2-Clause"
 
   base = "https://github.com/tamatebako/tebako/releases/download/v#{version}"
@@ -20,42 +20,42 @@ class Tebako < Formula
   on_macos do
     on_arm do
       url "#{base}/tebako-#{version}-macos-arm64"
-      sha256 "30e341ce88e95e81af2c80200936f5fe66b4cc2f8318383ff8b68b05f6665b50"
+      sha256 "64a2a4db8f649bf8150e2096c4ffb60aed1d288aad6b2bbe17e4c80b5eab462d"
       resource "tebako-pkg" do
         url "#{base}/tebako-pkg-#{ver}-macos-arm64"
-        sha256 "1a08522984286852007f99e6025f3d73f091fc0f2377111512651d4aa242cc34"
+        sha256 "2d2f8ff53b80d3155516fa4fd68033f7863704a7a8f9bbf05f34a463d9e3ed54"
       end
       resource "tfs" do
         url "#{base}/tfs-#{ver}-macos-arm64"
-        sha256 "3d536d82849bcd87848a9197d6869018af55812cb0095e920e8aa32e22d05387"
+        sha256 "f08ef323050496006f67b9e298960b0fc53123e53754326dc21e41937955dc7a"
       end
       resource "tebako-shim" do
         url "#{base}/tebako-shim-#{ver}-macos-arm64"
-        sha256 "6aca42429882f28ff8618d60ed5013a55178eed7cf242c44f860d643a2514597"
+        sha256 "26ae7284fecbf7c86852ee959354736e3d5fa31abb971821819272a5c7e07d85"
       end
       resource "tebako-bootstrap" do
         url "#{base}/tebako-bootstrap-#{ver}-macos-arm64"
-        sha256 "b1bbefbd29f34b11e39117ab532e2e83a784465a17f0ac7cb51ee794d6a29c9a"
+        sha256 "3571c4cf494df2b7bee1294b0b8c27857912102f330d9244317eff8bde0089ac"
       end
     end
     on_intel do
       url "#{base}/tebako-#{version}-macos-x86_64"
-      sha256 "f0aef0aaf3ff14cf57de4c02ccd500a6101a28c85f081df4a3d4c5f0454ffb6b"
+      sha256 "73ec8a0ff4cd919de7ca7f47f4c336256d25af6b3084834d49d91b234a5b7113"
       resource "tebako-pkg" do
         url "#{base}/tebako-pkg-#{ver}-macos-x86_64"
-        sha256 "07678647f37038c8d5191cb0c2b8ba17dab0acc8d7332bc2f1c49b56b5ad6fa3"
+        sha256 "0bcf3f3ec288500269f441379163a3e74e80ec6482e08b719bc3f2d298419905"
       end
       resource "tfs" do
         url "#{base}/tfs-#{ver}-macos-x86_64"
-        sha256 "838e3c296027d68e59b1057683d231df93a9c6f7ed3f27815c83b97cb440a4e1"
+        sha256 "29a51bf8ea8c426ac0365d370637eb968013508d8eec9a595352e7a2f4c0e08f"
       end
       resource "tebako-shim" do
         url "#{base}/tebako-shim-#{ver}-macos-x86_64"
-        sha256 "7562f66076f7abf8f7ce1f81a5b3ae89b337f83f196a3d61e2bc9d31e2103988"
+        sha256 "8785cb22bc4033e7bfae4911d0aad9bcd9abbc59abba32c2e7962dbc83ebe061"
       end
       resource "tebako-bootstrap" do
         url "#{base}/tebako-bootstrap-#{ver}-macos-x86_64"
-        sha256 "7f4dce4271d6be1807fdd0db6da7614022717ddaf5256eedbcd5be9cd0aa43be"
+        sha256 "2dd3b899acf54de0c8310595bf526c03878e6913ebf14de5dfbe0fd41c310a87"
       end
     end
   end
@@ -63,42 +63,42 @@ class Tebako < Formula
   on_linux do
     on_arm do
       url "#{base}/tebako-#{version}-linux-gnu-arm64"
-      sha256 "ca5fdf8ddb24a33ad3e538e00b80fccd1a17edb66462ec375bcbb340d4a68e11"
+      sha256 "5b818947e68fac4655de44b137e9a3cbcf95f355b15b50df88e5570549002455"
       resource "tebako-pkg" do
         url "#{base}/tebako-pkg-#{ver}-linux-gnu-arm64"
-        sha256 "b6f15d1267b9cc8c7f306daa209266d7fb49565686c632ca730923d94ed13add"
+        sha256 "10801e740d6c6a664f2ad8e8d18a15bae83d9e75a53936b014d0d431e3f90692"
       end
       resource "tfs" do
         url "#{base}/tfs-#{ver}-linux-gnu-arm64"
-        sha256 "9c152c718e0dcf329f709a8259d4eefe2aead454045f417f382736e20583c09e"
+        sha256 "ad5a70ef4a84baaaee7411d65340c0dcc6fb43360f9e77872d42032fe30fe7a7"
       end
       resource "tebako-shim" do
         url "#{base}/tebako-shim-#{ver}-linux-gnu-arm64"
-        sha256 "1247f21ec70f55537fc359eb0b5b1df4a61642910d73f6ceadc2cb98091d9ff3"
+        sha256 "7fe1d85a8ecfb9ae638e53a5635a50ef848bd0ea1a72751f26da0e08e6f309da"
       end
       resource "tebako-bootstrap" do
         url "#{base}/tebako-bootstrap-#{ver}-linux-gnu-arm64"
-        sha256 "ac2d2b63fde4cd372d90909fce08d1aaf79178e1724a58e61d4860625bae8f28"
+        sha256 "10847ab49b864ee49740d05b44a1ec5415a728203553da1c0ed0325892598420"
       end
     end
     on_intel do
       url "#{base}/tebako-#{version}-linux-gnu-x86_64"
-      sha256 "9c9c9b12be99184f800097bba2c7ab0fd4fc16574507eec605327e325c607074"
+      sha256 "17d4e0c5d1208381049601a0616fe740e0d7694132ce34d2850cb019273fa239"
       resource "tebako-pkg" do
         url "#{base}/tebako-pkg-#{ver}-linux-gnu-x86_64"
-        sha256 "634d118c74d7e58bf33099ba81d42ed0414e2a196f64836e3b760de798b554d2"
+        sha256 "b86874d1d695e6424def2fc275f26f73bc52947310926f80aa4e8473856e2784"
       end
       resource "tfs" do
         url "#{base}/tfs-#{ver}-linux-gnu-x86_64"
-        sha256 "026a6d381daa0bde64a8d638b45964eec240fb77d6a6c2e00fc5123404020d16"
+        sha256 "8585ac81c8caa609bed33ebc485cf4adbe94d1d6c81b56c22e9bd289eb1d6eca"
       end
       resource "tebako-shim" do
         url "#{base}/tebako-shim-#{ver}-linux-gnu-x86_64"
-        sha256 "828110100e2395d1e77bd7b8bb2a56fd3d4d2a13d8986b9ddf3e1bb258938cb4"
+        sha256 "cacace502c103c43bd41f78960561e5226b0565185290a3cb36c08310f0a0703"
       end
       resource "tebako-bootstrap" do
         url "#{base}/tebako-bootstrap-#{ver}-linux-gnu-x86_64"
-        sha256 "9aaef8dc9ecc2b56651cf74b34842a81f23462284480b5f62c289b433aaafc10"
+        sha256 "3a135d3ea56b81d7b424e27520edffcc10cb39bec71c254e2679c368bd7da14f"
       end
     end
   end
