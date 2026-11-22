@@ -7,7 +7,7 @@
 set -eu
 
 REPO="tamatebako/tebako"
-BINARIES="tebako tebako-pkg tfs tebako-bootstrap"
+BINARIES="tebako tebako-pkg tfs tebako-bootstrap tebako-shim"
 DEST="${TEBAKO_INSTALL_DEST:-$HOME/.local/bin}"
 
 die() { echo "install.sh: $*" >&2; exit 1; }
@@ -40,7 +40,7 @@ esac
 # ------------------------------------------------------------------------
 version="${1:-${TEBAKO_VERSION:-}}"
 if [ -z "$version" ]; then
-  echo "install.sh: resolving the latest release of $REPO…"
+  echo "install.sh: resolving the latest release of ${REPO}…"
   version="$(curl -fsSL -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest" | sed 's|.*/||')"
 fi
 [ -n "$version" ] || die "could not resolve the latest release tag"
@@ -75,7 +75,7 @@ for b in $BINARIES; do
   got="$(S256 "$tmp/$b")"
   [ "$got" = "$want" ] || die "SHA256 MISMATCH for $b (want $want, got $got) — refusing to install"
 done
-echo "install.sh: sha256 verified for all four binaries"
+echo "install.sh: sha256 verified for all five binaries"
 
 # ------------------------------------------------------------------------
 # 5. Install to ~/.local/bin (NEVER sudo)
@@ -116,4 +116,4 @@ esac
 
 echo ""
 echo "  Next: $DEST/tebako --version"
-echo "        $DEST/tebako install tfs:github:tamatebako/hello"
+echo "        $DEST/tebako install hello"
