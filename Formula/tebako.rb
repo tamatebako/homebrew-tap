@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 # The tebako CLI formula (spec 16 §3.1): installs the five tebako
-# binaries (tebako, tfs, tebako-pkg, tebako-shim, tebako-bootstrap) per
-# platform. sha256s are the release SHA256SUMS of v2.8.60 (verified at
-# fill time).
+# binaries (tebako, tfs, tebako-pkg, tebako-shim, tebako-bootstrap) plus
+# the preload shim library (tebako#1099 — tfs exec's delivery, placed
+# beside the binaries where the loader looks) per platform. sha256s are
+# the release SHA256SUMS of v2.8.60 (verified at fill time).
 class Tebako < Formula
   desc "Package, sign, and run stitched tebako packages and payload slices"
   homepage "https://github.com/tamatebako/tebako"
@@ -11,6 +12,12 @@ class Tebako < Formula
   # audit's URL-scan cannot be the source of truth for this formula.
   version "2.8.60"
   license "BSD-2-Clause"
+
+  # The preload shim joined the release asset set after v2.8.85: the
+  # resources/install/test below gate on the pinned release carrying it
+  # (a lower bound — tools/bump.rb refuses a pin whose SHA256SUMS lacks
+  # the shim's rows, so a gap release can never be slotted in silently).
+  PRELOAD_SINCE = "2.8.86"
 
   base = "https://github.com/tamatebako/tebako/releases/download/v#{version}"
   # Resource blocks instance_eval against the Resource, where `version`
@@ -37,6 +44,12 @@ class Tebako < Formula
         url "#{base}/tebako-bootstrap-#{ver}-macos-arm64"
         sha256 "9652a31ba2b147c4ca53229b911ee6d89d02861a5a24ee1a618f6299b666b5bb"
       end
+      if version >= Version.new(PRELOAD_SINCE)
+        resource "libtfs_preload" do
+          url "#{base}/libtfs_preload-#{ver}-macos-arm64.dylib"
+          sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+        end
+      end
     end
     on_intel do
       url "#{base}/tebako-#{version}-macos-x86_64"
@@ -56,6 +69,12 @@ class Tebako < Formula
       resource "tebako-bootstrap" do
         url "#{base}/tebako-bootstrap-#{ver}-macos-x86_64"
         sha256 "79b2709b54f7f428c2b8e84b6f02ce7cd7c5e817ecc05a98302c9d577ddfd06b"
+      end
+      if version >= Version.new(PRELOAD_SINCE)
+        resource "libtfs_preload" do
+          url "#{base}/libtfs_preload-#{ver}-macos-x86_64.dylib"
+          sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+        end
       end
     end
   end
@@ -80,6 +99,12 @@ class Tebako < Formula
         url "#{base}/tebako-bootstrap-#{ver}-linux-gnu-arm64"
         sha256 "5ae7e674f444eef1752f0060bd618f78bdc39c368f829868e8a5cfca0def9fac"
       end
+      if version >= Version.new(PRELOAD_SINCE)
+        resource "libtfs_preload" do
+          url "#{base}/libtfs_preload-#{ver}-linux-gnu-arm64.so"
+          sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+        end
+      end
     end
     on_intel do
       url "#{base}/tebako-#{version}-linux-gnu-x86_64"
@@ -100,6 +125,12 @@ class Tebako < Formula
         url "#{base}/tebako-bootstrap-#{ver}-linux-gnu-x86_64"
         sha256 "201c1de1bcb4c084cf9d213566283d4d4bd48e8c15e5591e442886637e879332"
       end
+      if version >= Version.new(PRELOAD_SINCE)
+        resource "libtfs_preload" do
+          url "#{base}/libtfs_preload-#{ver}-linux-gnu-x86_64.so"
+          sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+        end
+      end
     end
   end
 
@@ -108,6 +139,13 @@ class Tebako < Formula
     %w[tebako-pkg tfs tebako-shim tebako-bootstrap].each do |name|
       resource(name).stage do
         bin.install Dir["#{name}-#{version}-*"].first => name
+      end
+    end
+    # The preload shim (tebako#1099) goes where `tfs exec` looks: beside
+    # the tfs binary — same directory, real file name.
+    if version >= Version.new(PRELOAD_SINCE)
+      resource("libtfs_preload").stage do
+        bin.install Dir["libtfs_preload-#{version}-*"].first => (OS.mac? ? "libtfs_preload.dylib" : "libtfs_preload.so")
       end
     end
   end
@@ -141,10 +179,26 @@ class Tebako < Formula
     system bin/"tebako", "add-registry", "tfs:github:tebako-packages/hello"
     system bin/"tebako", "install", "hello"
     assert_match "Hello, world!", shell_output("#{testpath}/.tebako/shims/hello")
+
+    # tebako#1099: `tfs exec` refuses outright when the preload shim is
+    # not beside the tfs binary — this is the bottle's proof the formula
+    # placed it, with zero compilation (the image is mkimage'd in-process
+    # by the shipped tfs; true needs no VFS reads to exit 0 — on Linux
+    # the preload still mounts the image in its constructor, on macOS
+    # the platform binary strips DYLD_* and the refusal-gone path is the
+    # assertion).
+    if version >= Version.new(PRELOAD_SINCE)
+      (testpath/"src/hello.txt").write "hello"
+      system bin/"tfs", "mkimage", (testpath/"src").to_s, "--output", (testpath/"fixture.tfs").to_s
+      system bin/"tfs", "exec", (testpath/"fixture.tfs").to_s, "--", "/usr/bin/true"
+    end
   end
 end
 
 # Refilling the sha256s for a future release:
+#   ruby tools/bump.rb <X.Y.Z>   # refills all 24 pins (5 binaries + the
+#                                # preload shim, × 4 platforms) + version
+# or by hand:
 #   gh release download v<X> -R tamatebako/tebako -p "SHA256SUMS" -D /tmp
-#   cat /tmp/SHA256SUMS  # → 5 binaries × N platforms; slot each into the
+#   cat /tmp/SHA256SUMS  # → 6 files × N platforms; slot each into the
 #   matching sha256 above and bump version.

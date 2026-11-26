@@ -6,11 +6,14 @@
 #   ruby tools/bump.rb 2.8.17
 #
 # Fetches the release's SHA256SUMS (the release asset naming is the
-# contract: <binary>-<version>-<platform>) and rewrites the formula's
+# contract: <binary>-<version>-<platform>, the preload shim carrying its
+# library extension — tebako#1099) and rewrites the formula's
 # version line and every sha256 in place. The formula covers five
-# binaries × four platforms (macos-arm64, macos-x86_64,
-# linux-gnu-arm64, linux-gnu-x86_64); every one of the twenty must be
-# present in SHA256SUMS or the run aborts naming what is missing.
+# binaries + the preload shim × four platforms (macos-arm64, macos-x86_64,
+# linux-gnu-arm64, linux-gnu-x86_64); every one of the 24 must be
+# present in SHA256SUMS or the run aborts naming what is missing. (A
+# release predating the shim asset therefore aborts — the formula's
+# PRELOAD_SINCE gate is what keeps an older pin installable.)
 
 require "net/http"
 require "uri"
@@ -18,8 +21,17 @@ require "uri"
 VERSION = ARGV.first or abort "usage: ruby tools/bump.rb <version>   (e.g. 2.8.17)"
 ROOT = File.expand_path("..", __dir__)
 FORMULA = File.join(ROOT, "Formula", "tebako.rb")
-BINARIES = %w[tebako tebako-pkg tfs tebako-shim tebako-bootstrap].freeze
+BINARIES = %w[tebako tebako-pkg tfs tebako-shim tebako-bootstrap libtfs_preload].freeze
 PLATFORMS = %w[macos-arm64 macos-x86_64 linux-gnu-arm64 linux-gnu-x86_64].freeze
+
+# The released asset's file name for a (binary, platform) — the preload
+# shim carries .dylib/.so, everything else is suffix-free.
+asset_name = lambda do |binary, platform|
+  next "#{binary}-#{VERSION}-#{platform}" if binary != "libtfs_preload"
+
+  ext = platform.start_with?("macos") ? ".dylib" : ".so"
+  "#{binary}-#{VERSION}-#{platform}#{ext}"
+end
 
 def get(url, redirects = 3)
   uri = URI(url)
@@ -39,13 +51,13 @@ body.each_line do |line|
   sums[file] = sha
 end
 
-missing = BINARIES.product(PLATFORMS).reject { |b, p| sums.key?("#{b}-#{VERSION}-#{p}") }
-abort "SHA256SUMS is missing: #{missing.map { |b, p| "#{b}-#{VERSION}-#{p}" }.join(', ')}" unless missing.empty?
+missing = BINARIES.product(PLATFORMS).reject { |b, p| sums.key?(asset_name.call(b, p)) }
+abort "SHA256SUMS is missing: #{missing.map { |b, p| asset_name.call(b, p) }.join(', ')}" unless missing.empty?
 
 text = File.read(FORMULA)
 replaced = 0
 BINARIES.product(PLATFORMS).each do |binary, platform|
-  want = sums.fetch("#{binary}-#{VERSION}-#{platform}")
+  want = sums.fetch(asset_name.call(binary, platform))
   # The asset name appears in the url; its sha256 sits on the same line
   # (the resource one-liners, which interpolate the `ver` local) or on
   # the immediately following line (the bare url + sha256 pair, which
@@ -59,7 +71,7 @@ BINARIES.product(PLATFORMS).each do |binary, platform|
   end
 end
 
-abort "expected 20 sha256 replacements, made #{replaced}" unless replaced == 20
+abort "expected 24 sha256 replacements, made #{replaced}" unless replaced == 24
 
 text = text.sub(/version "[0-9.]+"/, %(version "#{VERSION}"))
   .sub(/sha256s are the release SHA256SUMS of v[0-9.]+/, "sha256s are the release SHA256SUMS of v#{VERSION}")
